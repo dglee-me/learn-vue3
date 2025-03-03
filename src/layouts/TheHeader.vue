@@ -28,6 +28,11 @@
                 >게시판</RouterLink
               >
             </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/nested" active-class="active"
+                >Nested</RouterLink
+              >
+            </li>
           </ul>
           <div class="d-flex">
             <button class="btn btn-outline-light" type="button" @click="goPage">
