@@ -2,33 +2,19 @@
   <div>
     <h2>게시글 수정</h2>
     <hr class="my-4" />
-    <form @submit.prevent="edit()">
-      <div class="mb-3">
-        <label for="title" class="form-label">제목</label>
-        <input
-          v-model="form.title"
-          type="text"
-          class="form-control"
-          id="title"
-          value=""
-        />
-      </div>
-      <div class="mb-3">
-        <label for="content" class="form-label">내용</label>
-        <textarea
-          class="form-control"
-          id="content"
-          rows="3"
-          v-model="form.content"
-        ></textarea>
-      </div>
-      <div class="pt-4">
-        <button class="btn btn-outline-danger me-2" @click="goDetailPage">
+    <PostForm
+      v-model:title="form.title"
+      v-model:content="form.content"
+      @submit.prevent="edit"
+    >
+      <template #actions>
+        <button class="btn btn-outline-danger" @click="goDetailPage">
           취소
         </button>
         <button class="btn btn-primary">수정</button>
-      </div>
-    </form>
+      </template>
+    </PostForm>
+    <AppAlert :show="showAlert" :msg="alertMsg" :type="alertType" />
   </div>
 </template>
 
@@ -36,6 +22,8 @@
 import { getPostById, updatePost } from '@/api/posts';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import PostForm from '@/components/posts/PostForm.vue';
+import AppAlert from '@/components/AppAlert.vue';
 
 const props = defineProps({
   id: Number,
@@ -59,9 +47,11 @@ const edit = async () => {
     await updatePost(props.id, {
       ...form.value,
     });
-    router.push({ name: 'PostDetail', params: { id: props.id } });
+    // router.push({ name: 'PostDetail', params: { id: props.id } });
+    vAlert('수정이 완료되었습니다.', 'success');
   } catch (e) {
     console.error(e);
+    vAlert('네트워크 오류', 'error');
   }
 };
 
@@ -72,6 +62,16 @@ const goDetailPage = () =>
       id: props.id,
     },
   });
+
+const showAlert = ref(false);
+const alertMsg = ref('');
+const alertType = ref('');
+const vAlert = (message, type) => {
+  showAlert.value = true;
+  alertMsg.value = message;
+  alertType.value = type;
+  setTimeout(() => (showAlert.value = false), 2000);
+};
 </script>
 
 <style></style>
