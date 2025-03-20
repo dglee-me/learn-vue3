@@ -1,30 +1,31 @@
 <template>
-  <div v-if="show" class="app-alert alert" role="alert" :class="styleClass">
-    {{ msg }}
+  <!-- <Transition name="slide">
+    <div v-if="show" class="app-alert alert" role="alert" :class="typeStyle">
+      {{ msg }}
+    </div>
+  </Transition> -->
+
+  <div class="app-alert">
+    <TransitionGroup name="slide">
+      <div
+        v-for="({ message, type }, index) in items"
+        :key="index"
+        class="alert"
+        :class="typeStyle(type)"
+        role="alert"
+      >
+        {{ message }}
+      </div>
+    </TransitionGroup>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-const props = defineProps({
-  type: {
-    type: String,
-    default: '',
-    validator: value => ['success', 'error'].includes(value),
-  },
-  show: {
-    type: Boolean,
-    default: false,
-  },
-  msg: {
-    type: String,
-    required: true,
-  },
+defineProps({
+  items: Array,
 });
 
-const styleClass = computed(() =>
-  props.type === 'error' ? 'alert-danger' : 'alert-success',
-);
+const typeStyle = type => (type === 'error' ? 'alert-danger' : 'alert-primary');
 </script>
 
 <style lang="css" scoped>
@@ -32,5 +33,21 @@ const styleClass = computed(() =>
   position: fixed;
   top: 10px;
   right: 10px;
+}
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.5s ease;
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  opacity: 1;
+  transform: translateY(0px);
 }
 </style>
